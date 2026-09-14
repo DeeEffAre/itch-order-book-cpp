@@ -2,52 +2,61 @@
 
 #include "matching_engine/itch_parser/messages.hpp"
 
-template <typename MessageHandler> struct ItchParser {
+#include <span>
 
-    static void parse_and_dispatch(std::span<const std::byte> raw, MessageHandler& handler) {
+template <typename MessageHandler> struct ItchParser {
+    static void parse_and_dispatch(std::span<const uint8_t> raw, MessageHandler& handler) {
         if (raw.empty()) [[unlikely]] {
             return;
         }
 
-        switch (static_cast<char>(raw[0])) {
+        switch (raw[0]) {
         case 'S': {
-            const auto* msg = reinterpret_cast<const SystemEventMessage*>(raw.data());
-            handler.on_message(*msg);
+            if (const SystemEventMessage* msg = SystemEventMessage::new_msg(raw)) [[likely]] {
+                handler.on_system_event(msg);
+            }
             break;
         }
         case 'A': {
-            const auto* msg = reinterpret_cast<const AddOrderNoMPID*>(raw.data());
-            handler.on_message(*msg);
+            if (const AddOrderNoMPID* msg = AddOrderNoMPID::new_msg(raw)) [[likely]] {
+                handler.on_add_order_no_mpid(msg);
+            }
             break;
         }
         case 'F': {
-            const auto* msg = reinterpret_cast<const AddOrderWithMPID*>(raw.data());
-            handler.on_message(*msg);
+            if (const AddOrderWithMPID* msg = AddOrderWithMPID::new_msg(raw)) [[likely]] {
+                handler.on_add_order_with_mpid(msg);
+            }
             break;
         }
         case 'X': {
-            const auto* msg = reinterpret_cast<const OrderCancel*>(raw.data());
-            handler.on_message(*msg);
+            if (const OrderCancel* msg = OrderCancel::new_msg(raw)) [[likely]] {
+                handler.on_order_cancel(msg);
+            }
             break;
         }
         case 'D': {
-            const auto* msg = reinterpret_cast<const OrderDelete*>(raw.data());
-            handler.on_message(*msg);
+            if (const OrderDelete* msg = OrderDelete::new_msg(raw)) [[likely]] {
+                handler.on_order_delete(msg);
+            }
             break;
         }
         case 'U': {
-            const auto* msg = reinterpret_cast<const OrderReplace*>(raw.data());
-            handler.on_message(*msg);
+            if (const OrderReplace* msg = OrderReplace::new_msg(raw)) [[likely]] {
+                handler.on_order_replace(msg);
+            }
             break;
         }
         case 'E': {
-            const auto* msg = reinterpret_cast<const OrderExecute*>(raw.data());
-            handler.on_message(*msg);
+            if (const OrderExecute* msg = OrderExecute::new_msg(raw)) [[likely]] {
+                handler.on_order_execute(msg);
+            }
             break;
         }
         case 'C': {
-            const auto* msg = reinterpret_cast<const OrderExecuteWithPrice*>(raw.data());
-            handler.on_message(*msg);
+            if (const OrderExecuteWithPrice* msg = OrderExecuteWithPrice::new_msg(raw)) [[likely]] {
+                handler.on_order_execute_with_price(msg);
+            }
             break;
         }
         default:

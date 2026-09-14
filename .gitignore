@@ -2,3 +2,7 @@ build/
 .cache/
 compile_commands.json
 CMakeUserPresets.json
+
+**/*.md
+!**/README.md
+*.data

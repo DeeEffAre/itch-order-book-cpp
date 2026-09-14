@@ -1,5 +1,5 @@
 {
   "name": "myproject",
   "version": "0.1.0",
-  "dependencies": []
+  "dependencies": ["catch2", "benchmark"]
 }

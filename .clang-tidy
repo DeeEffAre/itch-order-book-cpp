@@ -21,7 +21,8 @@ Checks: >
   -hicpp-avoid-c-arrays,
   -cppcoreguidelines-pro-type-reinterpret-cast,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -portability-avoid-pragma-once
+  -portability-avoid-pragma-once,
+  -misc-non-private-member-variables-in-classes
 
 WarningsAsErrors: ''
 
