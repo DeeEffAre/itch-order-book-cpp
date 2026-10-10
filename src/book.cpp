@@ -171,15 +171,18 @@ void OrderBook::shift_prices_down(std::uint64_t shift) noexcept {
 
 void OrderBook::collect_active_level_indices() noexcept {
     active_orders_scratchpad_.clear();
-    auto collect_levels = [this](const auto& levels) {
-        for (const auto& level : levels) {
-            for (auto idx = level.head; idx != SlabIndex::NULL_INDEX; idx = order_pool_[idx].next) {
+    auto collect_levels = [this](const auto& levels, const PriceBitset& bitmap) {
+        constexpr std::size_t NONE = std::numeric_limits<std::size_t>::max();
+        for (std::size_t price_idx = bitmap.find_first_set_from(0); price_idx != NONE;
+             price_idx = bitmap.find_first_set_from(price_idx + 1)) {
+            for (auto idx = levels[price_idx].head; idx != SlabIndex::NULL_INDEX;
+                 idx = order_pool_[idx].next) {
                 active_orders_scratchpad_.push_back(idx);
             }
         }
     };
-    collect_levels(bids_);
-    collect_levels(asks_);
+    collect_levels(bids_, *bid_bitmap_);
+    collect_levels(asks_, *ask_bitmap_);
 }
 
 SlabIndex OrderBook::add_order(Order order) noexcept {
